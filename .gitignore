@@ -1,0 +1,4 @@
+.cert/
+.env.local
+dist/
+node_modules/

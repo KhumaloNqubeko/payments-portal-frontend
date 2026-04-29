@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: light;
+    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply m-0 min-h-screen bg-slate-950 text-slate-100 antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(34, 197, 94, 0.16), transparent 24%),
+      radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 26%),
+      linear-gradient(180deg, #020617 0%, #08111f 45%, #06121b 100%);
+  }
+
+  a {
+    @apply no-underline;
+  }
+
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+}
