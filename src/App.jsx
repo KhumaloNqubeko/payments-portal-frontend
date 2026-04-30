@@ -78,10 +78,10 @@ function AppNav() {
           <NavLink to="/" className={linkClass}>Home</NavLink>
           {!auth.token && <NavLink to="/register" className={linkClass}>Register</NavLink>}
           {!auth.token && <NavLink to="/login" className={linkClass}>Customer Login</NavLink>}
-          {/* {!auth.token && <NavLink to="/employee/login" className={linkClass}>Employee Login</NavLink>} */}
+          {!auth.token && <NavLink to="/employee/login" className={linkClass}>Employee Login</NavLink>}
           {auth.role === "CUSTOMER" && <NavLink to="/dashboard" className={linkClass}>Dashboard</NavLink>}
           {auth.role === "CUSTOMER" && <NavLink to="/transactions" className={linkClass}>Transactions</NavLink>}
-          {/* {auth.role === "EMPLOYEE" && <NavLink to="/employee/dashboard" className={linkClass}>Employee Dashboard</NavLink>} */}
+          {auth.role === "EMPLOYEE" && <NavLink to="/employee/dashboard" className={linkClass}>Employee Dashboard</NavLink>}
           {auth.token && (
             <button type="button" className={ghostButtonClass} onClick={handleLogout} disabled={isLoggingOut}>
               {isLoggingOut ? <LoadingLabel label="Logging out" dark /> : "Logout"}
@@ -101,7 +101,7 @@ function LandingPage() {
       actions={
         <>
           <NavLink className={primaryButtonClass} to="/register">Open Customer Portal</NavLink>
-          {/* <NavLink className={secondaryButtonClass} to="/employee/login">Employee Access</NavLink> */}
+          <NavLink className={secondaryButtonClass} to="/employee/login">Employee Access</NavLink>
         </>
       }
     >

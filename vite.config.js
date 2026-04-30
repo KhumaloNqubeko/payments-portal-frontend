@@ -5,10 +5,11 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const devCertificatePath = fileURLToPath(new URL("./.cert/localhost-dev.pfx", import.meta.url));
-const httpsConfig = existsSync(devCertificatePath)
+const devCertificatePassphrase = process.env.DEV_CERT_PASSPHRASE;
+const httpsConfig = existsSync(devCertificatePath) && devCertificatePassphrase
   ? {
       pfx: devCertificatePath,
-      passphrase: "payments-portal-local-dev"
+      passphrase: devCertificatePassphrase
     }
   : undefined;
 
