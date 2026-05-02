@@ -495,7 +495,7 @@ function FormCard({ title, message, children }) {
     <section className={cardClass}>
       <SectionHeader
         title={title}
-        text={message || "Please make sure you capture all required fields and that the information is accurate before submitting."}
+        text={message || "Validation errors are shown inline and all fields must be completed to submit."}
       />
       {children}
     </section>
