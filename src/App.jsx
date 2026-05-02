@@ -115,6 +115,7 @@ function RegistrationPage() {
   const [form, setForm] = useState({
     fullName: "",
     username: "",
+    email: "",
     southAfricanIdNumber: "",
     accountNumber: "",
     password: ""
@@ -151,6 +152,7 @@ function RegistrationPage() {
           <form className="grid gap-5 md:grid-cols-2" onSubmit={handleSubmit}>
             <Field label="Full name" value={form.fullName} error={errors.fullName} onChange={(value) => setForm({ ...form, fullName: value })} />
             <Field label="Username" value={form.username} error={errors.username} autoComplete="username" onChange={(value) => setForm({ ...form, username: value })} />
+            <Field label="Email" type="email" value={form.email} error={errors.email} autoComplete="email" onChange={(value) => setForm({ ...form, email: value })} />
             <Field label="South African ID number" value={form.southAfricanIdNumber} error={errors.southAfricanIdNumber} onChange={(value) => setForm({ ...form, southAfricanIdNumber: value })} />
             <Field label="Account number" value={form.accountNumber} error={errors.accountNumber} onChange={(value) => setForm({ ...form, accountNumber: value })} />
             <div className="md:col-span-2">
@@ -218,6 +220,10 @@ function CustomerDashboard() {
   const [transactions, setTransactions] = useState([]);
   const [message, setMessage] = useState("");
   const [form, setForm] = useState({
+    senderFullName: "",
+    beneficiaryBankName: "",
+    country: "",
+    paymentReference: "",
     amount: "",
     currency: "USD",
     provider: "SWIFT",
@@ -229,7 +235,16 @@ function CustomerDashboard() {
   const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
 
   useEffect(() => {
-    refreshMe().catch(() => null);
+    refreshMe()
+      .then((user) => {
+        if (user?.fullName) {
+          setForm((current) => ({
+            ...current,
+            senderFullName: current.senderFullName || user.fullName
+          }));
+        }
+      })
+      .catch(() => null);
     apiFetch("/payments/my-transactions", { token: auth.token })
       .then(setTransactions)
       .catch((error) => setMessage(error.message));
@@ -251,6 +266,10 @@ function CustomerDashboard() {
       });
       setTransactions((current) => [created, ...current]);
       setForm({
+        senderFullName: auth.user?.fullName || form.senderFullName,
+        beneficiaryBankName: "",
+        country: "",
+        paymentReference: "",
         amount: "",
         currency: "USD",
         provider: "SWIFT",
@@ -275,15 +294,21 @@ function CustomerDashboard() {
       <div  className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <FormCard title="New international payment" message={message}>
           <form className="grid gap-5 md:grid-cols-2" onSubmit={submitPayment}>
+            <Field label="Sender full name" value={form.senderFullName} error={errors.senderFullName} onChange={(value) => setForm({ ...form, senderFullName: value })} />
+            <Field label="Beneficiary full name" value={form.beneficiaryName} error={errors.beneficiaryName} onChange={(value) => setForm({ ...form, beneficiaryName: value })} />
+            <Field label="Beneficiary bank name" value={form.beneficiaryBankName} error={errors.beneficiaryBankName} onChange={(value) => setForm({ ...form, beneficiaryBankName: value })} />
+            <Field label="Country" value={form.country} error={errors.country} onChange={(value) => setForm({ ...form, country: value })} />
             <Field label="Amount" type="number" value={form.amount} error={errors.amount} onChange={(value) => setForm({ ...form, amount: value })} />
             <SelectField label="Currency" value={form.currency} options={["ZAR", "USD", "EUR", "GBP"]} onChange={(value) => setForm({ ...form, currency: value })} />
             <SelectField label="Provider" value={form.provider} options={["SWIFT"]} onChange={(value) => setForm({ ...form, provider: value })} />
-            <Field label="Beneficiary name" value={form.beneficiaryName} error={errors.beneficiaryName} onChange={(value) => setForm({ ...form, beneficiaryName: value })} />
             <div className="md:col-span-2">
-              <Field label="Beneficiary account number" value={form.beneficiaryAccountNumber} error={errors.beneficiaryAccountNumber} onChange={(value) => setForm({ ...form, beneficiaryAccountNumber: value.toUpperCase() })} />
+              <Field label="Beneficiary account / IBAN" value={form.beneficiaryAccountNumber} error={errors.beneficiaryAccountNumber} onChange={(value) => setForm({ ...form, beneficiaryAccountNumber: value.toUpperCase() })} />
             </div>
             <div className="md:col-span-2">
               <Field label="SWIFT / BIC code" value={form.swiftCode} error={errors.swiftCode} onChange={(value) => setForm({ ...form, swiftCode: value.toUpperCase() })} />
+            </div>
+            <div className="md:col-span-2">
+              <Field label="Payment reference" value={form.paymentReference} error={errors.paymentReference} onChange={(value) => setForm({ ...form, paymentReference: value })} />
             </div>
             <div className="md:col-span-2 pt-2">
               <button className={primaryButtonClass} type="submit" disabled={isSubmittingPayment}>
@@ -470,7 +495,7 @@ function FormCard({ title, message, children }) {
     <section className={cardClass}>
       <SectionHeader
         title={title}
-        text={message || "Fields are checked in the client first and validated again by the API before persistence."}
+        text={message || "Please make sure you capture all required fields and that the information is accurate before submitting."}
       />
       {children}
     </section>
@@ -551,6 +576,7 @@ function TransactionTable({ items, employeeView, onAction, activeAction }) {
             <th className="px-4 py-3">Beneficiary</th>
             <th className="px-4 py-3">Masked Account</th>
             <th className="px-4 py-3">SWIFT</th>
+            <th className="px-4 py-3">Reference</th>
             <th className="px-4 py-3">Status</th>
             <th className="px-4 py-3">Verified By</th>
             {employeeView && <th className="px-4 py-3">Actions</th>}
@@ -565,6 +591,7 @@ function TransactionTable({ items, employeeView, onAction, activeAction }) {
               <td className="px-4 py-4">{item.beneficiaryName}</td>
               <td className="px-4 py-4">{item.maskedBeneficiaryAccountNumber}</td>
               <td className="px-4 py-4">{item.swiftCode}</td>
+              <td className="px-4 py-4">{item.paymentReference}</td>
               <td className="px-4 py-4">
                 <StatusPill label={item.status.replaceAll("_", " ")} tone={toneForStatus(item.status)} />
               </td>

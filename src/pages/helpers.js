@@ -1,12 +1,16 @@
 export const validationPatterns = {
   fullName: /^[A-Za-z' -]{2,100}$/,
+  email: /^[A-Za-z0-9._%+-]{3,64}@[A-Za-z0-9.-]{2,253}\.[A-Za-z]{2,20}$/,
   username: /^[A-Za-z0-9._]{3,30}$/,
   southAfricanIdNumber: /^\d{13}$/,
   accountNumber: /^\d{8,12}$/,
   password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,128}$/,
   beneficiaryName: /^[A-Za-z0-9'.,&()\-\/ ]{2,100}$/,
+  bankName: /^[A-Za-z0-9'.,&()\-\/ ]{2,120}$/,
   beneficiaryAccountNumber: /^[A-Z0-9]{8,34}$/,
-  swiftCode: /^[A-Z0-9]{8}([A-Z0-9]{3})?$/
+  swiftCode: /^[A-Z0-9]{8}([A-Z0-9]{3})?$/,
+  country: /^[A-Za-z ]{2,60}$/,
+  paymentReference: /^[A-Za-z0-9 .,'()\-\/]{3,140}$/
 };
 
 export function validateCustomerRegistration(form) {
@@ -17,6 +21,9 @@ export function validateCustomerRegistration(form) {
   }
   if (!validationPatterns.username.test(form.username)) {
     errors.username = "Use 3-30 safe characters: letters, digits, underscore or dot.";
+  }
+  if (!validationPatterns.email.test(form.email)) {
+    errors.email = "Enter a valid email address.";
   }
   if (!validationPatterns.southAfricanIdNumber.test(form.southAfricanIdNumber)) {
     errors.southAfricanIdNumber = "South African ID number must be exactly 13 digits.";
@@ -43,14 +50,26 @@ export function validatePayment(form) {
   if (!["SWIFT"].includes(form.provider)) {
     errors.provider = "Choose a supported provider.";
   }
+  if (!validationPatterns.fullName.test(form.senderFullName)) {
+    errors.senderFullName = "Sender full name contains invalid characters.";
+  }
   if (!validationPatterns.beneficiaryName.test(form.beneficiaryName)) {
     errors.beneficiaryName = "Beneficiary name contains invalid characters.";
+  }
+  if (!validationPatterns.bankName.test(form.beneficiaryBankName)) {
+    errors.beneficiaryBankName = "Beneficiary bank name contains invalid characters.";
   }
   if (!validationPatterns.beneficiaryAccountNumber.test(form.beneficiaryAccountNumber)) {
     errors.beneficiaryAccountNumber = "Beneficiary account number is invalid.";
   }
   if (!validationPatterns.swiftCode.test(form.swiftCode)) {
     errors.swiftCode = "SWIFT/BIC must be 8 or 11 uppercase letters or digits.";
+  }
+  if (!validationPatterns.country.test(form.country)) {
+    errors.country = "Country contains invalid characters.";
+  }
+  if (!validationPatterns.paymentReference.test(form.paymentReference)) {
+    errors.paymentReference = "Payment reference contains invalid characters.";
   }
 
   return errors;
